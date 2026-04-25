@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Daniel Tran — Senior Frontend Engineer based in Singapore. React, TypeScript, Three.js. Currently at Shopify.">
+<meta name="author" content="Daniel Tran">
+<meta property="og:title" content="Daniel Tran — Senior Frontend Engineer">
+<meta property="og:description" content="React, TypeScript, Three.js. Currently at Shopify. Singapore-based.">
+<meta property="og:url" content="https://remalw.github.io">
+<meta property="og:type" content="website">
+<title>Daniel Tran — Senior Frontend Engineer</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+<header>
+  <nav>
+    <a href="#" class="logo">DT</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#writing">Writing</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="hello">Hi, I'm</p>
+    <h1>Daniel Tran.</h1>
+    <h2>I build fast, accessible web apps.</h2>
+    <p class="lede">
+      Senior Frontend Engineer at <strong>Shopify</strong>, based in Singapore.
+      I work with React, TypeScript, and Next.js most days, and Three.js when I'm lucky.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">See projects</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h3 class="section-title">About</h3>
+    <div class="prose">
+      <p>
+        I grew up between Saigon and Singapore, picked up coding in high school, and graduated from
+        <strong>NUS</strong> with a B.Sc. in Computer Science (Hons) in 2019.
+      </p>
+      <p>
+        My career started full-stack at a Series-B fintech, but I drifted toward the frontend after
+        realizing I cared more about what users actually see and feel than about another microservice.
+        Spent a few years leading frontend at a games platform — that's where I picked up Three.js and
+        learned how to make WebGL fast.
+      </p>
+      <p>
+        These days I lean <em>pragmatic over purist</em>. I'd rather ship a 90% solution that real users
+        love than perfect architecture nobody touches. Strong opinions on performance (Core Web Vitals
+        matter), accessibility (it's not optional), and developer experience (your tooling shapes your output).
+      </p>
+      <p>
+        Outside work: I write occasionally on this site, contribute to a few OSS libraries, hike when
+        the weather plays nice, and run a hobby project rendering generative art with shaders.
+      </p>
+    </div>
+
+    <div class="stack">
+      <h4>Stack</h4>
+      <div class="stack-grid">
+        <div class="stack-group">
+          <h5>Daily</h5>
+          <ul><li>React</li><li>TypeScript</li><li>Next.js</li><li>Node.js</li><li>NestJS</li></ul>
+        </div>
+        <div class="stack-group">
+          <h5>Comfortable with</h5>
+          <ul><li>Three.js / WebGL</li><li>Tailwind</li><li>Vue 3</li><li>GraphQL</li><li>PostgreSQL</li></ul>
+        </div>
+        <div class="stack-group">
+          <h5>Cloud / infra</h5>
+          <ul><li>AWS (Lambda, S3, CloudFront)</li><li>Docker</li><li>GitHub Actions</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section">
+    <h3 class="section-title">Selected projects</h3>
+    <div class="projects">
+      <article class="project">
+        <h4><a href="https://github.com/remalw/shader-garden">shader-garden</a></h4>
+        <p>A small collection of GLSL fragment shaders, rendered with Three.js. Started as a notebook, became a thing. <a href="/shader-garden" class="inline-link">Live demo →</a></p>
+        <div class="tags"><span>Three.js</span><span>GLSL</span><span>React</span><span>Vite</span></div>
+      </article>
+
+      <article class="project">
+        <h4><a href="https://github.com/remalw/next-typed-routes">next-typed-routes</a></h4>
+        <p>Type-safe routing helpers for Next.js App Router. Because string-typed routes haunt my dreams.</p>
+        <div class="tags"><span>TypeScript</span><span>Next.js</span><span>Codegen</span></div>
+      </article>
+
+      <article class="project">
+        <h4><a href="https://github.com/remalw/react-overlay-stack">react-overlay-stack</a></h4>
+        <p>Headless modal/drawer/popover stack manager for React. ESC handling, focus trapping, and scroll lock done right.</p>
+        <div class="tags"><span>React</span><span>TypeScript</span><span>A11y</span></div>
+      </article>
+
+      <article class="project">
+        <h4><a href="https://github.com/remalw/webgl-perf-budget">webgl-perf-budget</a></h4>
+        <p>A lightweight runtime perf budget for WebGL scenes. Logs to console when you're past your budget — production-ready, low-overhead.</p>
+        <div class="tags"><span>WebGL</span><span>Three.js</span><span>Performance</span></div>
+      </article>
+
+      <article class="project">
+        <h4><a href="https://github.com/remalw/ts-strict-codemod">ts-strict-codemod</a></h4>
+        <p>Codemods to ease the migration to TypeScript <code>strict: true</code> without rewriting your whole app at once.</p>
+        <div class="tags"><span>TypeScript</span><span>ts-morph</span><span>Tooling</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="writing" class="section">
+    <h3 class="section-title">Writing</h3>
+    <ul class="posts">
+      <li>
+        <time datetime="2026-01-22">22 Jan 2026</time>
+        <a href="/blog/typescript-strict-mode">Why TypeScript strict mode should be your default</a>
+        <p>An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.</p>
+      </li>
+      <li>
+        <time datetime="2025-09-08">8 Sep 2025</time>
+        <a href="/blog/three-js-performance">Three.js performance: how I cut WebGL frame time by 40%</a>
+        <p>Real techniques that moved real numbers on a real production scene.</p>
+      </li>
+      <li>
+        <time datetime="2025-04-12">12 Apr 2025</time>
+        <a href="/blog/react-18-migration">How we migrated to React 18 in production</a>
+        <p>A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="contact" class="section">
+    <h3 class="section-title">Get in touch</h3>
+    <p class="prose">
+      I'm open to interesting frontend roles or freelance work — especially anything involving
+      performance, design systems, or WebGL. Less interested in CRUD admin panels.
+    </p>
+    <div class="contact-grid">
+      <a href="mailto:remalw2019@gmail.com">remalw2019@gmail.com</a>
+      <a href="https://github.com/remalw">github.com/remalw</a>
+      <a href="https://www.linkedin.com/in/daniel-tran-sg">linkedin.com/in/daniel-tran-sg</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 Daniel Tran · Singapore · UTC+8</p>
+  <p class="quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+</body>
+</html>
