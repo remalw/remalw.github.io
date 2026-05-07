@@ -2,161 +2,305 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Daniel Tran — Senior Frontend Engineer based in Singapore. React, TypeScript, Three.js. Currently at Shopify.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel Tran — Senior Frontend Engineer</title>
+<meta name="description" content="Senior Frontend Engineer at Shopify, based in Singapore. React, TypeScript, Next.js, Three.js. I build fast, accessible web apps.">
 <meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
 <meta property="og:title" content="Daniel Tran — Senior Frontend Engineer">
 <meta property="og:description" content="React, TypeScript, Three.js. Currently at Shopify. Singapore-based.">
-<meta property="og:url" content="https://remalw.github.io">
 <meta property="og:type" content="website">
-<title>Daniel Tran — Senior Frontend Engineer</title>
-<link rel="stylesheet" href="styles.css">
+<meta property="og:url" content="https://remalw.github.io/">
+<meta property="og:image" content="https://remalw.github.io/assets/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@danieltrandev">
+
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/pages.css">
 </head>
 <body>
-<header>
-  <nav>
-    <a href="#" class="logo">DT</a>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#writing">Writing</a></li>
-      <li><a href="#contact">Contact</a></li>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="/" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/projects.html">Projects</a></li>
+      <li><a href="/blog.html">Writing</a></li>
+      <li><a href="/now.html">Now</a></li>
     </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
   </nav>
 </header>
 
-<main>
-  <section class="hero">
-    <p class="hello">Hi, I'm</p>
-    <h1>Daniel Tran.</h1>
-    <h2>I build fast, accessible web apps.</h2>
-    <p class="lede">
-      Senior Frontend Engineer at <strong>Shopify</strong>, based in Singapore.
-      I work with React, TypeScript, and Next.js most days, and Three.js when I'm lucky.
+<main id="main">
+
+<section class="hero">
+  <canvas class="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="hero-greeting">echo "Hi, I'm Daniel"</p>
+    <h1 class="hero-title">
+      <span class="hero-title-name">Daniel Tran.</span>
+      <span class="hero-title-tagline">I build fast, accessible web apps.</span>
+    </h1>
+    <p class="hero-lead">
+      Senior Frontend Engineer at <strong>Shopify</strong>, based in <strong>Singapore</strong>.
+      Seven years shipping React, TypeScript, and Next.js to production.
+      I care about <strong>Core Web Vitals</strong>, <strong>accessibility</strong>, and code that future-me won't curse at.
     </p>
+    <div class="hero-meta">
+      <span class="status-pill"><span class="dot"></span>Open to interesting work</span>
+      <span class="tag">React · TypeScript · Next.js</span>
+      <span class="tag">Three.js · WebGL</span>
+    </div>
     <div class="hero-cta">
-      <a href="#projects" class="btn btn-primary">See projects</a>
-      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      <a class="btn btn-primary" href="/projects.html">See projects</a>
+      <a class="btn btn-ghost" href="/about.html">About me</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="about" class="section">
-    <h3 class="section-title">About</h3>
-    <div class="prose">
-      <p>
-        I grew up between Saigon and Singapore, picked up coding in high school, and graduated from
-        <strong>NUS</strong> with a B.Sc. in Computer Science (Hons) in 2019.
-      </p>
-      <p>
-        My career started full-stack at a Series-B fintech, but I drifted toward the frontend after
-        realizing I cared more about what users actually see and feel than about another microservice.
-        Spent a few years leading frontend at a games platform — that's where I picked up Three.js and
-        learned how to make WebGL fast.
-      </p>
-      <p>
-        These days I lean <em>pragmatic over purist</em>. I'd rather ship a 90% solution that real users
-        love than perfect architecture nobody touches. Strong opinions on performance (Core Web Vitals
-        matter), accessibility (it's not optional), and developer experience (your tooling shapes your output).
-      </p>
-      <p>
-        Outside work: I write occasionally on this site, contribute to a few OSS libraries, hike when
-        the weather plays nice, and run a hobby project rendering generative art with shaders.
-      </p>
+<section class="section">
+  <div class="container">
+    <p class="section-label">Selected work</p>
+    <h2 class="section-title">Things I've built lately</h2>
+    <p class="section-lead">A handful of side projects, libraries, and experiments. Most of my day-job code lives in private repos at Shopify; this is the part of my work I can show in public.</p>
+
+    <div class="featured-projects">
+      <a href="/projects/shader-garden.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">shader-garden</h3>
+          <span class="project-card-meta">2024 — present</span>
+        </div>
+        <p class="project-card-desc">A small collection of GLSL fragment shaders rendered with Three.js, with a Vite + React harness for live editing. Started as a notebook, became a thing.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">Three.js</span>
+          <span class="tag">GLSL</span>
+          <span class="tag">React</span>
+          <span class="tag">Vite</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Read case study</span>
+          <span class="project-card-stats">8 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="/projects/next-typed-routes.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">next-typed-routes</h3>
+          <span class="project-card-meta">2024 — present</span>
+        </div>
+        <p class="project-card-desc">Type-safe routing helpers for Next.js App Router. Compile-time checked links and router calls. Because string-typed routes haunt my dreams.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">TypeScript</span>
+          <span class="tag">Next.js</span>
+          <span class="tag">Codegen</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Read case study</span>
+          <span class="project-card-stats">8 commits · 0.5.0</span>
+        </div>
+      </a>
+
+      <a href="/projects/react-overlay-stack.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">react-overlay-stack</h3>
+          <span class="project-card-meta">2023 — present</span>
+        </div>
+        <p class="project-card-desc">Headless modal/drawer/popover stack manager for React. Focus traps, ESC-to-close stack semantics, scroll lock — done right, no styling opinions.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">React</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">Accessibility</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Read case study</span>
+          <span class="project-card-stats">9 commits · 1.2.0</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/remalw/webgl-perf-budget" class="card project-card card-link" target="_blank" rel="noopener">
+        <div class="project-card-header">
+          <h3 class="project-card-title">webgl-perf-budget</h3>
+          <span class="project-card-meta">2025 — present</span>
+        </div>
+        <p class="project-card-desc">A lightweight runtime perf budget for WebGL scenes. Logs to console when you're past your draw-call or frame-time budget. Production-friendly.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">WebGL</span>
+          <span class="tag">Three.js</span>
+          <span class="tag">Performance</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">View on GitHub</span>
+          <span class="project-card-stats">6 commits</span>
+        </div>
+      </a>
     </div>
 
-    <div class="stack">
-      <h4>Stack</h4>
-      <div class="stack-grid">
-        <div class="stack-group">
-          <h5>Daily</h5>
-          <ul><li>React</li><li>TypeScript</li><li>Next.js</li><li>Node.js</li><li>NestJS</li></ul>
-        </div>
-        <div class="stack-group">
-          <h5>Comfortable with</h5>
-          <ul><li>Three.js / WebGL</li><li>Tailwind</li><li>Vue 3</li><li>GraphQL</li><li>PostgreSQL</li></ul>
-        </div>
-        <div class="stack-group">
-          <h5>Cloud / infra</h5>
-          <ul><li>AWS (Lambda, S3, CloudFront)</li><li>Docker</li><li>GitHub Actions</li></ul>
-        </div>
+    <div style="margin-top: var(--space-6); text-align: center;">
+      <a href="/projects.html" class="btn-link">See all projects</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--bg-1); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <p class="section-label">Stack</p>
+    <h2 class="section-title">What I work with</h2>
+    <p class="section-lead">The tools I've earned strong opinions about. Daily drivers in the first column; comfortable enough to ship in the others.</p>
+
+    <div class="stack-grid">
+      <div class="stack-group">
+        <p class="stack-group-label">Daily drivers</p>
+        <ul class="stack-group-list">
+          <li>React 18+</li>
+          <li>TypeScript</li>
+          <li>Next.js</li>
+          <li>Node.js</li>
+          <li>NestJS</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <p class="stack-group-label">Comfortable with</p>
+        <ul class="stack-group-list">
+          <li>Three.js / WebGL</li>
+          <li>GLSL</li>
+          <li>Vue 3</li>
+          <li>GraphQL</li>
+          <li>Tailwind</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <p class="stack-group-label">Cloud / infra</p>
+        <ul class="stack-group-list">
+          <li>AWS Lambda</li>
+          <li>S3 / CloudFront</li>
+          <li>Docker</li>
+          <li>GitHub Actions</li>
+          <li>PostgreSQL</li>
+        </ul>
+      </div>
+      <div class="stack-group">
+        <p class="stack-group-label">Tools</p>
+        <ul class="stack-group-list">
+          <li>Vite</li>
+          <li>Vitest</li>
+          <li>Playwright</li>
+          <li>Storybook</li>
+          <li>Sentry</li>
+        </ul>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="projects" class="section">
-    <h3 class="section-title">Selected projects</h3>
-    <div class="projects">
-      <article class="project">
-        <h4><a href="https://github.com/remalw/shader-garden">shader-garden</a></h4>
-        <p>A small collection of GLSL fragment shaders, rendered with Three.js. Started as a notebook, became a thing. <a href="/shader-garden" class="inline-link">Live demo →</a></p>
-        <div class="tags"><span>Three.js</span><span>GLSL</span><span>React</span><span>Vite</span></div>
-      </article>
+<section class="section">
+  <div class="container">
+    <p class="section-label">Writing</p>
+    <h2 class="section-title">Recent posts</h2>
+    <p class="section-lead">Whatever I just spent two weeks debugging usually ends up here.</p>
 
-      <article class="project">
-        <h4><a href="https://github.com/remalw/next-typed-routes">next-typed-routes</a></h4>
-        <p>Type-safe routing helpers for Next.js App Router. Because string-typed routes haunt my dreams.</p>
-        <div class="tags"><span>TypeScript</span><span>Next.js</span><span>Codegen</span></div>
-      </article>
+    <div class="blog-list">
+      <a href="/blog/typescript-strict-mode.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2026-01-22">22 Jan 2026</time>
+          <span>•</span>
+          <span>~7 min read</span>
+        </div>
+        <h3 class="post-card-title">Why TypeScript strict mode should be your default (and how to migrate without tears)</h3>
+        <p class="post-card-summary">An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.</p>
+      </a>
 
-      <article class="project">
-        <h4><a href="https://github.com/remalw/react-overlay-stack">react-overlay-stack</a></h4>
-        <p>Headless modal/drawer/popover stack manager for React. ESC handling, focus trapping, and scroll lock done right.</p>
-        <div class="tags"><span>React</span><span>TypeScript</span><span>A11y</span></div>
-      </article>
+      <a href="/blog/three-js-performance.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2025-09-08">8 Sep 2025</time>
+          <span>•</span>
+          <span>~9 min read</span>
+        </div>
+        <h3 class="post-card-title">Three.js performance: how I cut WebGL frame time by 40%</h3>
+        <p class="post-card-summary">Real techniques that moved real numbers on a real production scene. Not "put everything in InstancedMesh".</p>
+      </a>
 
-      <article class="project">
-        <h4><a href="https://github.com/remalw/webgl-perf-budget">webgl-perf-budget</a></h4>
-        <p>A lightweight runtime perf budget for WebGL scenes. Logs to console when you're past your budget — production-ready, low-overhead.</p>
-        <div class="tags"><span>WebGL</span><span>Three.js</span><span>Performance</span></div>
-      </article>
-
-      <article class="project">
-        <h4><a href="https://github.com/remalw/ts-strict-codemod">ts-strict-codemod</a></h4>
-        <p>Codemods to ease the migration to TypeScript <code>strict: true</code> without rewriting your whole app at once.</p>
-        <div class="tags"><span>TypeScript</span><span>ts-morph</span><span>Tooling</span></div>
-      </article>
+      <a href="/blog/react-18-migration.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2025-04-12">12 Apr 2025</time>
+          <span>•</span>
+          <span>~10 min read</span>
+        </div>
+        <h3 class="post-card-title">How we migrated to React 18 in production</h3>
+        <p class="post-card-summary">A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.</p>
+      </a>
     </div>
-  </section>
 
-  <section id="writing" class="section">
-    <h3 class="section-title">Writing</h3>
-    <ul class="posts">
-      <li>
-        <time datetime="2026-01-22">22 Jan 2026</time>
-        <a href="/blog/typescript-strict-mode">Why TypeScript strict mode should be your default</a>
-        <p>An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.</p>
-      </li>
-      <li>
-        <time datetime="2025-09-08">8 Sep 2025</time>
-        <a href="/blog/three-js-performance">Three.js performance: how I cut WebGL frame time by 40%</a>
-        <p>Real techniques that moved real numbers on a real production scene.</p>
-      </li>
-      <li>
-        <time datetime="2025-04-12">12 Apr 2025</time>
-        <a href="/blog/react-18-migration">How we migrated to React 18 in production</a>
-        <p>A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.</p>
-      </li>
-    </ul>
-  </section>
-
-  <section id="contact" class="section">
-    <h3 class="section-title">Get in touch</h3>
-    <p class="prose">
-      I'm open to interesting frontend roles or freelance work — especially anything involving
-      performance, design systems, or WebGL. Less interested in CRUD admin panels.
-    </p>
-    <div class="contact-grid">
-      <a href="mailto:remalw2019@gmail.com">remalw2019@gmail.com</a>
-      <a href="https://github.com/remalw">github.com/remalw</a>
-      <a href="https://www.linkedin.com/in/daniel-tran-sg">linkedin.com/in/daniel-tran-sg</a>
+    <div style="margin-top: var(--space-6); text-align: center;">
+      <a href="/blog.html" class="btn-link">All posts</a>
     </div>
-  </section>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+    <p class="section-label">Get in touch</p>
+    <h2 class="section-title">Open to interesting work</h2>
+    <p class="section-lead">Especially anything involving performance, design systems, or WebGL. Less interested in CRUD admin panels — sorry.</p>
+
+    <div class="contact-block">
+      <div class="contact-block-row">
+        <span class="contact-block-label">Email</span>
+        <a href="mailto:remalw2019@gmail.com" class="contact-block-value">remalw2019@gmail.com</a>
+      </div>
+      <div class="contact-block-row">
+        <span class="contact-block-label">GitHub</span>
+        <a href="https://github.com/remalw" target="_blank" rel="noopener" class="contact-block-value">github.com/remalw</a>
+      </div>
+      <div class="contact-block-row">
+        <span class="contact-block-label">LinkedIn</span>
+        <a href="https://www.linkedin.com/in/daniel-tran-sg" target="_blank" rel="noopener" class="contact-block-value">linkedin.com/in/daniel-tran-sg</a>
+      </div>
+      <div class="contact-block-row">
+        <span class="contact-block-label">Location</span>
+        <span class="contact-block-value">Singapore (UTC+8)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
-<footer>
-  <p>© 2026 Daniel Tran · Singapore · UTC+8</p>
-  <p class="quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/blog.html">Writing</a>
+      <a href="/now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
 </footer>
+
+<script src="scripts/nav.js" defer></script>
+<script src="scripts/hero.js" defer></script>
 </body>
 </html>

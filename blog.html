@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing — Daniel Tran</title>
+<meta name="description" content="Notes from the trenches: frontend performance, TypeScript, Three.js by Daniel Tran.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="Writing — Daniel Tran">
+<meta property="og:description" content="Notes from the trenches: frontend performance, TypeScript, Three.js by Daniel Tran.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="/" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/projects.html">Projects</a></li>
+      <li><a href="/blog.html">Writing</a></li>
+      <li><a href="/now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="section">
+  <div class="container">
+    <p class="section-label">Writing</p>
+    <h1 style="margin-bottom: var(--space-4);">Notes from the trenches.</h1>
+    <p class="section-lead">Whatever I just spent two weeks debugging usually ends up here. Mostly frontend performance, TypeScript, and the occasional WebGL deep dive.</p>
+
+    <div class="blog-list" style="margin-top: var(--space-7);">
+      <a href="/blog/typescript-strict-mode.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2026-01-22">22 Jan 2026</time>
+          <span>•</span>
+          <span>~7 min read</span>
+          <span>•</span>
+          <span>TypeScript</span>
+        </div>
+        <h3 class="post-card-title">Why TypeScript strict mode should be your default (and how to migrate without tears)</h3>
+        <p class="post-card-summary">An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.</p>
+      </a>
+
+      <a href="/blog/three-js-performance.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2025-09-08">8 Sep 2025</time>
+          <span>•</span>
+          <span>~9 min read</span>
+          <span>•</span>
+          <span>Three.js · Performance</span>
+        </div>
+        <h3 class="post-card-title">Three.js performance: how I cut WebGL frame time by 40%</h3>
+        <p class="post-card-summary">Real techniques that moved real numbers on a real production scene. Not "put everything in InstancedMesh".</p>
+      </a>
+
+      <a href="/blog/react-18-migration.html" class="post-card">
+        <div class="post-card-meta">
+          <time datetime="2025-04-12">12 Apr 2025</time>
+          <span>•</span>
+          <span>~10 min read</span>
+          <span>•</span>
+          <span>React</span>
+        </div>
+        <h3 class="post-card-title">How we migrated to React 18 in production: lessons from a 6-month rollout</h3>
+        <p class="post-card-summary">A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/blog.html">Writing</a>
+      <a href="/now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="scripts/nav.js" defer></script>
+
+</body>
+</html>

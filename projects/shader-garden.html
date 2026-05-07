@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>shader-garden — Daniel Tran</title>
+<meta name="description" content="A small Three.js + GLSL playground that actually has good ergonomics. ~12 shaders, hot-reload that preserves uniform state, and a declarative uniform protocol.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="shader-garden — Daniel Tran">
+<meta property="og:description" content="A small Three.js + GLSL playground that actually has good ergonomics. ~12 shaders, hot-reload that preserves uniform state, and a declarative uniform protocol.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="case-study-hero">
+  <div class="container-narrow">
+    <a href="/projects.html" class="case-study-back">All projects</a>
+    <h1 class="case-study-title">shader-garden</h1>
+    <p class="case-study-tagline">A small Three.js + GLSL playground that actually has good ergonomics. ~12 shaders, hot-reload that preserves uniform state, and a declarative uniform protocol.</p>
+    <div class="case-study-meta">
+      <div class="tag-row"><span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">React</span><span class="tag">Vite</span><span class="tag">TypeScript</span></div>
+    </div>
+    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-5);">
+      <a class="btn btn-primary" href="https://github.com/remalw/shader-garden" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="case-study-content">
+  <div class="container-narrow prose">
+    
+<h2>The problem</h2>
+<p>Fragment shaders are addictive but the ergonomics around iterating on them are bad. Hot-reload usually breaks. GLSL error messages are cryptic. State management between uniforms and the host React component is a mess. You end up reloading the page every time you change a number.</p>
+<p>I wanted a workflow that didn't fight me. Open a <code>.frag</code> file, change something, see the result instantly. If the shader has a syntax error, recover gracefully when I fix it. If I tweak a uniform live, preserve that value across hot reloads.</p>
+
+<h2>The approach</h2>
+<p>Three components, each doing one thing well:</p>
+<ol>
+<li><strong>Vite + <code>vite-plugin-glsl</code></strong> — gets us GLSL imports and HMR. Free.</li>
+<li><strong>A React harness</strong> — a tiny app that scans <code>src/shaders/</code> for <code>.frag</code> files, mounts a Three.js <code>ShaderMaterial</code> on a fullscreen quad, and provides controls.</li>
+<li><strong>A uniform protocol</strong> — every shader auto-receives <code>u_time</code>, <code>u_resolution</code>, <code>u_mouse</code>. Custom uniforms are declared in a sidecar <code>.json</code> file, surfaced as sliders.</li>
+</ol>
+
+<h3>Hot-reload that actually works</h3>
+<p>The default Three.js HMR path tears down the whole material on shader change, which means uniform values reset to their defaults. Annoying when you've been dragging a slider for 20 minutes.</p>
+<p>The fix is small: cache uniform values keyed by shader ID, and on rebuild, copy them onto the fresh uniforms object before reassigning to the material. <code>src/harness/hot-reload.ts</code> has the gory details.</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>hot-reload.ts</span></div>
+<pre><code>const uniformCache = new Map&lt;string, Uniforms&gt;();
+
+export function getOrPreserveUniforms(shaderId: string, fresh: Uniforms): Uniforms {
+  const cached = uniformCache.get(shaderId);
+  if (!cached) {
+    uniformCache.set(shaderId, fresh);
+    return fresh;
+  }
+  for (const key of Object.keys(fresh)) {
+    if (key in cached &amp;&amp; cached[key].value !== undefined) {
+      fresh[key].value = cached[key].value;
+    }
+  }
+  uniformCache.set(shaderId, fresh);
+  return fresh;
+}</code></pre>
+</div>
+
+<h3>The uniform protocol</h3>
+<p>Most live-coding shader environments either give you no controls or give you a <em>bunch</em> of controls and let you wire them up imperatively. I wanted something in between: <strong>declarative</strong>, but no boilerplate.</p>
+<p>Drop a <code>01-flow-field.frag</code>, optionally drop a <code>01-flow-field.json</code> next to it:</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>01-flow-field.json</span></div>
+<pre><code>{
+  "u_speed": { "type": "float", "min": 0, "max": 2, "default": 1 },
+  "u_color_a": { "type": "color", "default": "#1a232f" },
+  "u_color_b": { "type": "color", "default": "#e87a3e" }
+}</code></pre>
+</div>
+
+<p>The harness reads it, builds a controls panel, surfaces the values to the shader. No code changes needed.</p>
+
+<h2>Outcomes</h2>
+<div class="metric-row">
+  <div class="metric"><div class="metric-value">~12</div><div class="metric-label">shaders shipped</div></div>
+  <div class="metric"><div class="metric-value">&lt; 50ms</div><div class="metric-label">edit-to-pixel</div></div>
+  <div class="metric"><div class="metric-value">8</div><div class="metric-label">git commits</div></div>
+  <div class="metric"><div class="metric-value">100%</div><div class="metric-label">MIT — use it</div></div>
+</div>
+
+<p>The repo currently has shaders for FBM-domain-warped flow fields, Truchet tile patterns, Mandelbulb SDF raymarching, and a few others. New ones go up roughly monthly when I have a free evening.</p>
+
+<h2>Lessons</h2>
+<p><strong>Hot-reload that loses state is worse than no hot-reload.</strong> The first version of this had no uniform preservation; I'd reload the page out of frustration after a few edits. The cache trick takes 30 lines and changes the experience completely.</p>
+<p><strong>Don't fight the build tool.</strong> I considered writing a custom dev server. <code>vite-plugin-glsl</code> already exists and is good. Use it.</p>
+<p><strong>Declarative beats imperative for hobby projects.</strong> JSON sidecars feel slightly inelegant compared to "just write a hook in your shader file" — but they're trivially parseable, no parsing-out-comments-with-regex, and they survive shader rewrites.</p>
+
+<h2>What I'd do differently</h2>
+<p>Skip the React harness next time. It's overkill for what's essentially "render a fullscreen quad with the latest shader." A vanilla Three.js setup with a small controls library would be ~200 lines instead of ~600, and the harness's React state hasn't given me much in return.</p>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+
+</body>
+</html>

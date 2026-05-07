@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>react-overlay-stack — Daniel Tran</title>
+<meta name="description" content="Headless modal/drawer/popover stack manager for React. Focus traps, ESC stack semantics, scroll lock, restore focus — done correctly. No styling opinions.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="react-overlay-stack — Daniel Tran">
+<meta property="og:description" content="Headless modal/drawer/popover stack manager for React. Focus traps, ESC stack semantics, scroll lock, restore focus — done correctly. No styling opinions.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="case-study-hero">
+  <div class="container-narrow">
+    <a href="/projects.html" class="case-study-back">All projects</a>
+    <h1 class="case-study-title">react-overlay-stack</h1>
+    <p class="case-study-tagline">Headless modal/drawer/popover stack manager for React. Focus traps, ESC stack semantics, scroll lock, restore focus — done correctly. No styling opinions.</p>
+    <div class="case-study-meta">
+      <div class="tag-row"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Accessibility</span><span class="tag">Headless UI</span></div>
+    </div>
+    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-5);">
+      <a class="btn btn-primary" href="https://github.com/remalw/react-overlay-stack" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="case-study-content">
+  <div class="container-narrow prose">
+    
+<h2>The problem</h2>
+<p>Every project I've worked on has reinvented the same overlay logic: focus traps, ESC-to-close, scroll lock, z-index sanity. Often badly. Often differently in three places within the same app.</p>
+<p>This isn't React's fault — it's a category of UI state that's surprisingly subtle:</p>
+<ul>
+<li><strong>Focus trap</strong> — Tab cycles within the topmost overlay; Shift+Tab does the right thing.</li>
+<li><strong>ESC handling</strong> — Only the topmost overlay closes. Nested overlays don't all collapse at once.</li>
+<li><strong>Body scroll lock</strong> — Lock when first overlay opens, unlock when last closes. Restore prior overflow style cleanly.</li>
+<li><strong>Restore focus</strong> — When an overlay closes, focus returns to the element that opened it.</li>
+<li><strong>Stack-aware z-index</strong> — Topmost overlay should always render on top of others, no matter the source order.</li>
+</ul>
+<p>I wanted a headless library that handled all of this correctly, with no styling opinions, that I could drop into any React project.</p>
+
+<h2>The approach</h2>
+<p>Three layers, each isolated:</p>
+<ol>
+<li><code>OverlayProvider</code> — context with a stack of <code>{id, close}</code> entries</li>
+<li><code>useOverlay()</code> — hook that gives you <code>{isOpen, open, close, dialogProps}</code></li>
+<li><code>scroll-lock</code> + <code>inert</code> — body scroll lock and accessibility quarantine</li>
+</ol>
+
+<h3>The stack state machine</h3>
+<p>Stack push on open, pop on close. <code>topmost()</code> tells you which overlay should respond to ESC and which should hold the focus trap.</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>provider.tsx</span></div>
+<pre><code>type StackEntry = { id: string; close: () =&gt; void };
+
+export const OverlayContext = createContext&lt;{
+  stack: StackEntry[];
+  push: (entry: StackEntry) =&gt; void;
+  pop: (id: string) =&gt; void;
+  topmost: () =&gt; StackEntry | undefined;
+}&gt;(null!);</code></pre>
+</div>
+
+<h3>ESC that respects nesting</h3>
+<p>The original ESC implementation registered a global keydown listener at every overlay level. Result: pressing ESC closed every open overlay, all at once. <a href="https://github.com/remalw/react-overlay-stack/issues/1">Issue #1</a> from the wild.</p>
+<p>The fix: a single global listener, with each overlay's hook checking <code>ctx.topmost()?.id === id</code> before reacting. Only the topmost overlay closes; any others stay open. <code>e.stopPropagation()</code> prevents bubbling further.</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>use-overlay.ts (excerpt)</span></div>
+<pre><code>useEffect(() =&gt; {
+  if (!isOpen) return;
+  const onKey = (e: KeyboardEvent) =&gt; {
+    if (e.key === 'Escape' &amp;&amp; ctx.topmost()?.id === id) {
+      e.stopPropagation();
+      close();
+    }
+  };
+  document.addEventListener('keydown', onKey, true);
+  return () =&gt; document.removeEventListener('keydown', onKey, true);
+}, [isOpen, id]);</code></pre>
+</div>
+
+<h3>Scroll lock that doesn't break</h3>
+<p>The naïve "set <code>body.overflow = 'hidden'</code>" approach has two failure modes:</p>
+<ol>
+<li>If the user already had a custom overflow style, you clobber it.</li>
+<li>Scrollbar disappearing causes a layout shift.</li>
+</ol>
+<p>Fix: ref-count the locks; first open captures original overflow + computes scrollbar width and applies <code>padding-right</code>; last close restores. Code is in <code>scroll-lock.ts</code>.</p>
+
+<h3>Inert for older browsers</h3>
+<p>Modern browsers support the <code>inert</code> attribute (Chrome 102+, Firefox 112+, Safari 15.5+). For older browsers, the polyfill walks all focusable descendants and saves their <code>tabindex</code>, then sets it to <code>-1</code>. Restores on close.</p>
+
+<h2>API in practice</h2>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>SettingsModal.tsx</span></div>
+<pre><code>function SettingsButton() {
+  const overlay = useOverlay({ id: 'settings-modal' });
+
+  return (
+    &lt;&gt;
+      &lt;button onClick={overlay.open}&gt;Settings&lt;/button&gt;
+
+      {overlay.isOpen &amp;&amp; (
+        &lt;div role="dialog" {...overlay.dialogProps}&gt;
+          &lt;h2&gt;Settings&lt;/h2&gt;
+          &lt;button onClick={overlay.close}&gt;Close&lt;/button&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/&gt;
+  );
+}</code></pre>
+</div>
+
+<p>That's it. No portals, no styles, no animations — bring your own. The library handles the state machine, focus, scroll lock, and accessibility plumbing. You handle pixels.</p>
+
+<h2>Outcomes</h2>
+<div class="metric-row">
+  <div class="metric"><div class="metric-value">v1.2.0</div><div class="metric-label">stable</div></div>
+  <div class="metric"><div class="metric-value">9</div><div class="metric-label">git commits</div></div>
+  <div class="metric"><div class="metric-value">~280</div><div class="metric-label">lines (core)</div></div>
+  <div class="metric"><div class="metric-value">100%</div><div class="metric-label">a11y compliant</div></div>
+</div>
+
+<h2>Lessons</h2>
+<p><strong>Overlay logic is high-leverage.</strong> Every product has overlays. Every product gets them subtly wrong. A correct headless implementation pays for itself in audit findings avoided.</p>
+<p><strong>Headless = freedom.</strong> No styling = library users don't fight the design system. They get the hard parts (state, a11y, focus) and own the easy parts (pixels).</p>
+<p><strong>Test the keyboard flow, not just the click flow.</strong> The first version had RTL tests that opened/closed via fake clicks. None of them caught the ESC-bubbling bug. Adding a test that actually presses ESC found three more issues.</p>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+
+</body>
+</html>

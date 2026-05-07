@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>next-typed-routes — Daniel Tran</title>
+<meta name="description" content="Type-safe routing for Next.js App Router. Compile-time-checked links, params, and route names — derived from your filesystem.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="next-typed-routes — Daniel Tran">
+<meta property="og:description" content="Type-safe routing for Next.js App Router. Compile-time-checked links, params, and route names — derived from your filesystem.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="case-study-hero">
+  <div class="container-narrow">
+    <a href="/projects.html" class="case-study-back">All projects</a>
+    <h1 class="case-study-title">next-typed-routes</h1>
+    <p class="case-study-tagline">Type-safe routing for Next.js App Router. Compile-time-checked links, params, and route names — derived from your filesystem.</p>
+    <div class="case-study-meta">
+      <div class="tag-row"><span class="tag">TypeScript</span><span class="tag">Next.js</span><span class="tag">Codegen</span></div>
+    </div>
+    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-5);">
+      <a class="btn btn-primary" href="https://github.com/remalw/next-typed-routes" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="case-study-content">
+  <div class="container-narrow prose">
+    
+<h2>The problem</h2>
+<p>The Next.js App Router is great. Its routing API isn't. <code>&lt;Link href="/posts/123" /&gt;</code> takes any string. Refactor a route from <code>/posts/[id]</code> to <code>/articles/[slug]</code>, and your <code>Link</code>s break silently at runtime.</p>
+<p>Existing solutions either require you to write your routes twice (once in the filesystem, once in a config) or are tied to deprecated stacks. I wanted something that:</p>
+<ul>
+<li>Reads my <code>app/</code> directory as the source of truth</li>
+<li>Generates types automatically</li>
+<li>Catches missing/wrong route params at <strong>compile time</strong>, not runtime</li>
+<li>Supports App Router patterns including catch-all and route groups</li>
+</ul>
+
+<h2>The approach</h2>
+<p>Two pieces:</p>
+
+<h3>1. The codegen</h3>
+<p>A small CLI that scans <code>app/</code> for <code>page.tsx</code> files and emits a <code>routes.gen.ts</code> with a discriminated union of route patterns. Run it on dev startup, watch for changes, and let TypeScript do the rest.</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>routes.gen.ts (auto-generated)</span></div>
+<pre><code>// AUTO-GENERATED. Do not edit.
+export type Routes =
+  | '/'
+  | '/about'
+  | '/posts'
+  | '/posts/[slug]'
+  | '/posts/[slug]/comments'
+  | '/(marketing)/pricing'  // route groups stripped at runtime
+  | '/files/[...path]'      // catch-all
+  ;</code></pre>
+</div>
+
+<h3>2. The route() helper</h3>
+<p>Where the magic happens. Uses TypeScript template literal types to extract param names from a route pattern and require them at the call site:</p>
+
+<div class="code-window">
+<div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>route.ts</span></div>
+<pre><code>type ExtractParams&lt;S extends string&gt; =
+  S extends `${string}[${infer P}]${infer Rest}`
+    ? P extends `...${infer R}`
+      ? { [K in R]: string[] } &amp; ExtractParams&lt;Rest&gt;
+      : { [K in P]: string } &amp; ExtractParams&lt;Rest&gt;
+    : Record&lt;never, never&gt;;
+
+export function route&lt;S extends string&gt;(
+  pattern: S,
+  params: ExtractParams&lt;S&gt;,
+): string {
+  let result: string = pattern;
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      result = result.replace(`[...${key}]`, value.join('/'));
+    } else {
+      result = result.replace(`[${key}]`, String(value));
+    }
+  }
+  return result;
+}</code></pre>
+</div>
+
+<p>The cool part: TypeScript infers the required params <em>from the route string</em>. So:</p>
+<ul>
+<li><code>route('/posts/[slug]', { slug: 'hello' })</code> → ✅ OK</li>
+<li><code>route('/posts/[slug]', {})</code> → ❌ Type error: missing 'slug'</li>
+<li><code>route('/posts/[slug]', { slug: 'hello', extra: 'no' })</code> → ❌ Type error: 'extra' not allowed</li>
+<li><code>route('/typo', {})</code> → ❌ Type error: route doesn't exist</li>
+</ul>
+
+<h2>Edge cases that mattered</h2>
+<p><strong>Catch-all routes.</strong> <code>/files/[...path]/page.tsx</code> generates a route where <code>path</code> is <code>string[]</code>, not <code>string</code>. Initial version got this wrong; #1 was a bug report from real usage.</p>
+<p><strong>Route groups.</strong> <code>app/(marketing)/about/page.tsx</code> serves at <code>/about</code>, not <code>/(marketing)/about</code>. The codegen strips parenthesized segments. Took a couple of iterations to get this right for nested groups.</p>
+<p><strong>Optional catch-all.</strong> <code>[[...slug]]</code> means the param is optional. The generated type is <code>string[] | undefined</code>.</p>
+
+<h2>Outcomes</h2>
+<div class="metric-row">
+  <div class="metric"><div class="metric-value">v0.5.0</div><div class="metric-label">latest release</div></div>
+  <div class="metric"><div class="metric-value">8</div><div class="metric-label">git commits</div></div>
+  <div class="metric"><div class="metric-value">3</div><div class="metric-label">issues triaged</div></div>
+  <div class="metric"><div class="metric-value">~120</div><div class="metric-label">lines of core</div></div>
+</div>
+
+<p>I use this on three personal projects. Day-job stack at Shopify uses a different abstraction, but the core idea — derive types from the filesystem — has been my hill to die on for years.</p>
+
+<h2>Lessons</h2>
+<p><strong>Codegen is unreasonably effective for type safety.</strong> Once you've crossed the build-step Rubicon, deriving types from filesystem layout opens a lot of doors. You can do this for routes, for translation keys, for design tokens, for env vars.</p>
+<p><strong>Template literal types are powerful enough to make codegen optional.</strong> If your pattern strings are literal in source code, you can skip the codegen entirely and let TypeScript infer everything. The codegen exists for the <code>Routes</code> union — listing all valid routes — which TypeScript can't derive from the filesystem.</p>
+
+<h2>What's next</h2>
+<p>I'd like to extend this to <strong>route metadata</strong>: layout-level config (auth requirements, prefetch behavior) attached to the type system so tooling can read it. But that's a bigger project and I haven't had a clear use case yet.</p>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+
+</body>
+</html>

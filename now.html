@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Now — Daniel Tran</title>
+<meta name="description" content="What Daniel Tran is currently working on, learning, and reading.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="Now — Daniel Tran">
+<meta property="og:description" content="What Daniel Tran is currently working on, learning, and reading.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="/" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/projects.html">Projects</a></li>
+      <li><a href="/blog.html">Writing</a></li>
+      <li><a href="/now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="section">
+  <div class="container-narrow">
+    <p class="section-label">/now</p>
+    <h1 style="margin-bottom: var(--space-4);">What I'm doing now.</h1>
+    <p class="section-lead">A <a href="https://nownownow.com/about" target="_blank" rel="noopener">/now page</a> — a snapshot of what's currently occupying my brain, updated whenever it shifts.</p>
+    <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg-3);">Last updated: April 2026</p>
+
+    <div class="now-grid" style="margin-top: var(--space-6);">
+      <div class="now-section">
+        <h3>Working on</h3>
+        <ul>
+          <li>Merchant settings UI rebuild at Shopify (P75 TTI improvements)</li>
+          <li>shader-garden — adding a few SDF demos</li>
+          <li>An internal RFC on type-safe feature flags</li>
+        </ul>
+      </div>
+
+      <div class="now-section">
+        <h3>Learning</h3>
+        <ul>
+          <li>Rust (slowly, painfully, satisfyingly)</li>
+          <li>Better understanding of the React Compiler internals</li>
+          <li>Compute shaders — for a hobby project on particle simulation</li>
+        </ul>
+      </div>
+
+      <div class="now-section">
+        <h3>Reading</h3>
+        <ul>
+          <li><em>A Philosophy of Software Design</em> — John Ousterhout (re-read)</li>
+          <li><em>The Mom Test</em> — Rob Fitzpatrick</li>
+          <li>Various papers on CRDT-based collaborative editing</li>
+        </ul>
+      </div>
+
+      <div class="now-section">
+        <h3>Listening to</h3>
+        <ul>
+          <li>Nils Frahm — <em>Music for Animals</em></li>
+          <li>Jon Hopkins — <em>Singularity</em></li>
+          <li>Soft Analog Synthesis Spotify playlist on repeat</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top: var(--space-7);">
+      <p class="callout-title">Status</p>
+      <p>I'm <strong>open to interesting frontend work</strong>, especially anything involving performance, design systems, or WebGL. Singapore-based, comfortable working remotely with teams in any timezone. <a href="mailto:remalw2019@gmail.com">Reach out.</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/blog.html">Writing</a>
+      <a href="/now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="scripts/nav.js" defer></script>
+
+</body>
+</html>

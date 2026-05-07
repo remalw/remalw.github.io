@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why TypeScript strict mode should be your default (and how to migrate without tears) — Daniel Tran</title>
+<meta name="description" content="An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="Why TypeScript strict mode should be your default (and how to migrate without tears) — Daniel Tran">
+<meta property="og:description" content="An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<article class="blog-post">
+  <div class="container-narrow">
+    <a href="/blog.html" class="case-study-back">All writing</a>
+    <header class="blog-post-header">
+      <div class="blog-post-meta">
+        <time datetime="2026-01-22">2026-01-22</time>
+        <span>•</span>
+        <span data-reading-time>~ min read</span>
+      </div>
+      <h1 class="blog-post-title">Why TypeScript strict mode should be your default (and how to migrate without tears)</h1>
+      <p class="blog-post-summary">An opinionated case for strict mode, plus a migration playbook that won't blow up your sprint.</p>
+    </header>
+    <div class="prose blog-post-body">
+      
+
+
+<p>I have one strong opinion on TypeScript: <code>"strict": true</code> should be on from day one of any new project. If you inherit a codebase without it, migrating is one of the highest-ROI things you can do.</p>
+
+<p>This isn't a controversial take in 2026. But every six months I still see a "we don't need strict mode, we're disciplined" post on Hacker News, and every six months it's wrong. Let me say why, then talk about migration.</p>
+
+<h2>The argument for strict mode</h2>
+
+<p>Strict mode is a bundle of seven flags. The two that matter most:</p>
+
+<ul>
+<li><strong><code>strictNullChecks</code></strong> — <code>T</code> no longer includes <code>null</code> and <code>undefined</code>. You have to handle those cases explicitly.</li>
+<li><strong><code>noImplicitAny</code></strong> — variables you don't annotate aren't silently typed <code>any</code>.</li>
+</ul>
+
+<p>Together, they catch the two biggest classes of bugs that TypeScript-without-strict misses:</p>
+
+<ol>
+<li>Accidental <code>undefined</code> access. The "Cannot read property X of undefined" that 60% of your runtime errors are made of.</li>
+<li>Functions that look typed but aren't. You have a function with a parameter <code>user</code> that's implicitly <code>any</code>. You think you're refactoring safely. You're not.</li>
+</ol>
+
+<p>People who say "I don't need strict mode" are usually saying "I am personally good enough to avoid these mistakes." Maybe you are. Your teammates, future-you, and the contractor who joins next month are not.</p>
+
+<p>I'll go further: I've worked on three large codebases that turned strict mode on after-the-fact. In every case, the migration uncovered real bugs that had been in production for months — not theoretical issues, actual user-affecting bugs. Including, in one case, a billing bug.</p>
+
+<h2>What about other flags?</h2>
+
+<p>The remaining strict flags are easier:</p>
+
+<ul>
+<li><code>strictFunctionTypes</code>, <code>strictBindCallApply</code> — turn these on. They catch real bugs and rarely produce false-positive friction.</li>
+<li><code>strictPropertyInitialization</code> — class fields must be initialized. Annoying for the first day, fine after.</li>
+<li><code>alwaysStrict</code> — emits <code>"use strict"</code> in JS output. Free.</li>
+<li><code>noImplicitThis</code> — <code>this</code> must be typed. Almost never produces issues in modern code.</li>
+</ul>
+
+<p>There are two non-strict flags you should also turn on after <code>strict: true</code>:</p>
+
+<ul>
+<li><strong><code>noUncheckedIndexedAccess</code></strong> — array and dictionary access returns <code>T | undefined</code>. This is <em>spicy</em> — it forces you to check every <code>arr[i]</code> access. But it eliminates an entire category of bugs.</li>
+<li><strong><code>exactOptionalPropertyTypes</code></strong> — distinguishes "missing key" from "key with undefined value". Niche, but useful for API contracts.</li>
+</ul>
+
+<h2>OK, you're sold. How do you migrate without ruining a sprint?</h2>
+
+<p>Here is the playbook I've used twice.</p>
+
+<h3>Don't try to flip all the flags at once</h3>
+
+<p>If your codebase has 1000+ TypeScript errors after enabling <code>strict: true</code>, you can't realistically fix them in one PR. You have two options:</p>
+
+<ol>
+<li><strong>Big-bang migration.</strong> Lock the codebase, fix everything, ship. This is feasible only on small teams with small codebases. I've never seen it work on anything over 50k lines.</li>
+<li><strong>Incremental migration.</strong> Enable one flag at a time, and within each flag, fix files in batches. This is what works.</li>
+</ol>
+
+<p>The incremental approach uses one trick: turn the flag on, mark every existing error as <code>@ts-expect-error</code>, then fix the markers over time. This way:</p>
+
+<ul>
+<li>The build passes.</li>
+<li>No new code can introduce the same kind of error (it would be a real type error).</li>
+<li>You can fix old code at your own pace.</li>
+</ul>
+
+<h3>The codemod helper</h3>
+
+<p>I wrote a small codemod for this — <a href="https://github.com/remalw/ts-strict-codemod"><code>ts-strict-codemod</code></a>. It does the marking automatically. But you can also do it by hand:</p>
+
+<div class="code-window"><div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>bash</span></div><pre><code>
+# 1. Add the flag to tsconfig
+# 2. Run tsc to get the errors
+pnpm tsc --noEmit &gt; errors.txt
+
+# 3. For each error, add @ts-expect-error above the offending line
+# (the codemod automates this)
+
+# 4. Build passes again. Now fix on a schedule.
+</code></pre></div>
+
+<h3>Migration order</h3>
+
+<p>Some flags produce more errors than others. Do them in this order:</p>
+
+<ol>
+<li><strong><code>noImplicitAny</code></strong> — the cheapest. You add type annotations.</li>
+<li><strong><code>strictNullChecks</code></strong> — the most important. Where most of your bugs are hiding.</li>
+<li><strong><code>strictFunctionTypes</code>, <code>strictBindCallApply</code>, <code>alwaysStrict</code></strong> — usually clean.</li>
+<li><strong><code>strictPropertyInitialization</code></strong> — class-heavy codebases will have noise here.</li>
+<li><strong><code>noUncheckedIndexedAccess</code></strong> — last. This one is spicy.</li>
+</ol>
+
+<p>For the 200k-line migration I led, this took six months of background work, alongside feature delivery. A small fraction of someone's time per week. Not blocking, not crash-priority. Just steady.</p>
+
+<h3>Wait — what about the codebase that's already strict-on but only 60% covered?</h3>
+
+<p>Some teams turn on <code>strict: true</code> but then sprinkle <code>as any</code> and <code>// @ts-ignore</code> everywhere. Those teams aren't really running strict mode. They're running a strict mode-shaped lie.</p>
+
+<p>If that's you: you don't have a strict mode problem, you have a code review problem. Add a lint rule (<code>@typescript-eslint/no-explicit-any</code>, <code>eslint-comments/no-use</code>) that warns on <code>any</code> and <code>@ts-ignore</code>. Treat them as code smells. Require justification in the PR description for every one.</p>
+
+<h2>Common objections</h2>
+
+<p><strong>"It slows us down."</strong> It speeds you up, after the first month. Bug-fix time is 30-50% lower in well-typed code in my experience. Initial annotation cost is real but small.</p>
+
+<p><strong>"Our types are too dynamic."</strong> Then your runtime is also too dynamic, and you should fix that first. TypeScript reflects what your code actually does. If <code>strict</code> makes that hard to type, your code is hard to reason about.</p>
+
+<p><strong>"<code>any</code> is fine sometimes."</strong> Yes. <code>unknown</code> is better.</p>
+
+<h2>What I actually do on a new project</h2>
+
+<div class="code-window"><div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>jsonc</span></div><pre><code>
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true
+  }
+}
+</code></pre></div>
+
+<p>This is the config I copy-paste into every new project. It catches more bugs than the default. It costs me roughly five extra minutes per day of explicit null checks. The trade is wildly in my favor.</p>
+
+<p>If you're considering migrating an existing codebase, do it. Start small, schedule it as ongoing work, and don't try to be a hero. Six months from now you'll have one fewer category of bug to chase down.</p>
+
+<p>Email if you want to talk migration strategy — <code>remalw2019@gmail.com</code>.</p>
+
+    </div>
+
+    <hr style="margin: var(--space-7) 0;">
+
+    <div style="text-align: center;">
+      <p style="color: var(--fg-2); margin-bottom: var(--space-4);">If you found this useful, I post like this every few months.</p>
+      <a class="btn btn-ghost" href="/blog.html">More writing</a>
+    </div>
+  </div>
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+<script src="../scripts/reading-time.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How we migrated to React 18 in production: lessons from a 6-month rollout — Daniel Tran</title>
+<meta name="description" content="A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="How we migrated to React 18 in production: lessons from a 6-month rollout — Daniel Tran">
+<meta property="og:description" content="A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<article class="blog-post">
+  <div class="container-narrow">
+    <a href="/blog.html" class="case-study-back">All writing</a>
+    <header class="blog-post-header">
+      <div class="blog-post-meta">
+        <time datetime="2025-04-12">2025-04-12</time>
+        <span>•</span>
+        <span data-reading-time>~ min read</span>
+      </div>
+      <h1 class="blog-post-title">How we migrated to React 18 in production: lessons from a 6-month rollout</h1>
+      <p class="blog-post-summary">A frontend tech lead's notes on shipping React 18 across a 200k-line codebase without taking the site down.</p>
+    </header>
+    <div class="prose blog-post-body">
+      
+
+
+<p>We started the React 18 migration on a Tuesday in October. We finished — really finished, every team off the legacy pattern — six months later, the week before Easter.</p>
+
+<p>This is the post-mortem I wish I'd had when we started. Not a tutorial. More like a field journal: what we expected to be hard, what was actually hard, and what surprised us.</p>
+
+<h2>Context</h2>
+
+<p>The codebase: ~200k lines of TypeScript across about 14 product surfaces, all hanging off a single host shell. Roughly 30 engineers contributing day to day. We were on React 17.0.2, with a well-loved pile of class components, custom HOCs, and a state management story that was 80% Redux Toolkit and 20% "we'll fix it later".</p>
+
+<p>Goals for the migration:</p>
+
+<ol>
+<li>Get to React 18.2 across the board.</li>
+<li>Adopt automatic batching and <code>useTransition</code> where it actually helped.</li>
+<li>Don't break anything in production.</li>
+</ol>
+
+<p>That's it. We deliberately didn't try to also adopt server components, Suspense for data fetching, or any of the new SSR streaming features. Scope discipline matters. You can do those later.</p>
+
+<h2>Phase 1: the easy part (weeks 1-3)</h2>
+
+<p>Bumping the dependency was painless. <code>react@18.2.0</code>, <code>react-dom@18.2.0</code>, types, done. Build passed. Tests passed.</p>
+
+<p>Then we ran the app, and roughly 40% of our test suite turned red.</p>
+
+<p>The reasons, in descending order of frequency:</p>
+
+<ul>
+<li><strong><code>act()</code> warnings on async tests</strong>. React 18's stricter <code>act()</code> assertions caught a bunch of places where we had <code>await Promise.resolve()</code> instead of properly waiting on rendered effects. Mostly mechanical to fix.</li>
+<li><strong><code>ReactDOM.render</code> deprecation</strong>. We had two test utilities still using the old API. Replaced with <code>createRoot</code>, moved on.</li>
+<li><strong>StrictMode double-invocation</strong>. This was the real one. We'd been running with <code><StrictMode></code> for years but development mode in React 18 calls effects twice, and we had effects with non-idempotent side effects. About 20 components needed cleanup.</li>
+</ul>
+
+<p>Two weeks in, all tests green, internal staging running. Felt good. Premature.</p>
+
+<h2>Phase 2: production rollout (weeks 4-10)</h2>
+
+<p>We didn't ship to 100% of users on day one. We shipped to 1%, behind a feature flag.</p>
+
+<p>This is the part most migration guides skip. Your unit tests can be perfect and you can still find weird stuff in production. Examples we hit:</p>
+
+<ul>
+<li>A third-party analytics library that monkey-patched <code>Array.prototype</code> and broke under automatic batching. Not React's fault, but it surfaced because of React 18.</li>
+<li>A WYSIWYG editor that depended on synchronous DOM updates. With automatic batching, two state updates in the same event handler now produced one render instead of two, and the editor's internal selection logic relied on the intermediate state. Three days of debugging to find this.</li>
+<li>A weird race in our analytics code where two <code>useEffect</code> calls fired in a different order under React 18's stricter scheduling. We had been relying on undocumented ordering.</li>
+</ul>
+
+<p>The lesson: <strong>the dangerous part of a major React migration isn't the things React tells you have changed. It's the undocumented contracts your code was secretly depending on.</strong></p>
+
+<p>We rolled out 1% → 5% → 25% → 50% → 100% over six weeks, with a kill switch that could revert any user back to React 17 within 30 seconds. We used the kill switch twice. Both times the bug was ours, not React's.</p>
+
+<h2>Phase 3: the long tail (weeks 11-26)</h2>
+
+<p>By week 11, all users were on React 18. We could have called it done. Instead we entered the long tail: actually using the new features.</p>
+
+<p>This is where most of the <em>good</em> came from.</p>
+
+<h3>Automatic batching</h3>
+
+<p>Mostly free. We had a few places where we'd manually wrapped multiple <code>setState</code> calls in <code>unstable_batchedUpdates</code> — those got cleaned up. We got a measurable reduction in re-renders across the app: roughly 30% fewer commits in our flame graphs on the dashboards.</p>
+
+<h3><code>useTransition</code></h3>
+
+<p>This was the killer feature. We had several search/filter UIs where typing in a textbox blocked the UI because filtering 10k items synchronously is slow. Wrapping the filter update in <code>startTransition</code> made these UIs feel instant — the textbox stays responsive, the list catches up when it can.</p>
+
+<p>Hard-won lesson: don't put <em>everything</em> in a transition. Transitions are interruptible, which means your UI will look "jittery" if you wrap state that needs to be visible immediately. A good rule: keep input state out of transitions, put list/computed-derived state in.</p>
+
+<h3>Suspense for code splitting</h3>
+
+<p>We already used <code>React.lazy</code>. React 18's Suspense improvements meant we could render placeholder UIs without the cascade-of-spinners problem. Modest win, but a real one.</p>
+
+<h2>What I'd do differently</h2>
+
+<p><strong>Start with the test suite, not the codebase.</strong> I'd spend the first week doing nothing but fixing <code>act()</code> warnings and StrictMode double-invocation issues, with the dependency <em>not yet bumped</em>. We did this in parallel and it created confusing noise.</p>
+
+<p><strong>Build the kill switch first, before any user sees React 18.</strong> We did this, but barely. If we hadn't, the WYSIWYG bug would have been much more painful.</p>
+
+<p><strong>Don't try to also "modernize" while you migrate.</strong> We had two engineers who, while migrating their team's components, also rewrote them in functional style. This was net-bad. The migration PRs should have been minimal — convert what's needed, don't refactor. Refactor later.</p>
+
+<p><strong>Budget for two months of "long tail" after the cutover.</strong> The actual migration takes one third of the calendar time. The other two thirds are adoption, fixing things you didn't know were broken, and capturing the wins.</p>
+
+<h2>Was it worth it?</h2>
+
+<p>Yes, but quieter than the marketing made it sound. Automatic batching gave us ~30% fewer renders, which translates to maybe a 5-10% improvement in mean frame time. <code>useTransition</code> made specific UIs feel dramatically better. Suspense was nice. Concurrent rendering didn't change much for us.</p>
+
+<p>Bigger picture: we were on the supported version of React. We could pick up future features without first paying back tech debt. That alone justifies the work.</p>
+
+<p>If you're starting a similar migration, I hope some of this is useful. Email me if you want to compare notes — <code>remalw2019@gmail.com</code>. Always happy to talk shop.</p>
+
+    </div>
+
+    <hr style="margin: var(--space-7) 0;">
+
+    <div style="text-align: center;">
+      <p style="color: var(--fg-2); margin-bottom: var(--space-4);">If you found this useful, I post like this every few months.</p>
+      <a class="btn btn-ghost" href="/blog.html">More writing</a>
+    </div>
+  </div>
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+<script src="../scripts/reading-time.js" defer></script>
+</body>
+</html>

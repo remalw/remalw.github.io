@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three.js performance: how I cut WebGL frame time by 40% — Daniel Tran</title>
+<meta name="description" content="Real techniques that moved real numbers on a real production scene. Not 'put everything in InstancedMesh'.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="Three.js performance: how I cut WebGL frame time by 40% — Daniel Tran">
+<meta property="og:description" content="Real techniques that moved real numbers on a real production scene. Not 'put everything in InstancedMesh'.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+<link rel="stylesheet" href="../styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="../" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../projects.html">Projects</a></li>
+      <li><a href="../blog.html">Writing</a></li>
+      <li><a href="../now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<article class="blog-post">
+  <div class="container-narrow">
+    <a href="/blog.html" class="case-study-back">All writing</a>
+    <header class="blog-post-header">
+      <div class="blog-post-meta">
+        <time datetime="2025-09-08">2025-09-08</time>
+        <span>•</span>
+        <span data-reading-time>~ min read</span>
+      </div>
+      <h1 class="blog-post-title">Three.js performance: how I cut WebGL frame time by 40%</h1>
+      <p class="blog-post-summary">Real techniques that moved real numbers on a real production scene. Not 'put everything in InstancedMesh'.</p>
+    </header>
+    <div class="prose blog-post-body">
+      
+
+
+<p>Most "Three.js performance" posts you find online are about toy scenes. The advice is the same in every one: use <code>InstancedMesh</code>, don't rebuild geometries every frame, merge static meshes. Good advice. Stops working when your scene has 200 unique meshes, dynamic lighting, and animated cameras.</p>
+
+<p>This is what actually moved the needle for me on a production scene that was running at ~24 fps on the M1 baseline. I got it to ~40 fps. Not magic, just careful work.</p>
+
+<h2>The scene</h2>
+
+<p>For context: an interactive product gallery with around 80 model instances visible at any time, soft shadows, post-processing (bloom + SMAA), and a custom pointer-tracking interaction layer. Target was 60 fps on M1; we were sitting at 24 fps.</p>
+
+<p>I'm not going to walk through every optimization. I'll talk about the four that gave the most return.</p>
+
+<h2>1. Stop computing matrices you're not using</h2>
+
+<p>If you have static meshes, set <code>mesh.matrixAutoUpdate = false</code> and call <code>mesh.updateMatrix()</code> once when you place them. By default, Three.js recomputes the matrix every frame for every object, even if nothing has moved.</p>
+
+<p>In our scene we had 60 of those 80 meshes static. Disabling auto-update on those 60 dropped per-frame matrix computation cost by about 1.2ms on average — which on a 16.6ms budget is 7% of your frame time, recovered for free.</p>
+
+<div class="code-window"><div class="code-window-header"><span class="code-window-dots"><span></span><span></span><span></span></span><span>ts</span></div><pre><code>
+scene.traverse((obj) =&gt; {
+  if (obj.isMesh &amp;&amp; !obj.userData.isAnimated) {
+    obj.matrixAutoUpdate = false;
+    obj.updateMatrix();
+  }
+});
+</code></pre></div>
+
+<p>Don't set <code>matrixWorldAutoUpdate = false</code> unless you really know what you're doing — it cascades to children and you'll spend the rest of the day debugging why your nested groups aren't moving.</p>
+
+<h2>2. The shadow map is probably your bottleneck</h2>
+
+<p>Run the Chrome WebGL profiler. If your scene has shadows, there's a 60% chance the shadow map render pass is your most expensive draw.</p>
+
+<p>Things that helped:</p>
+
+<ul>
+<li><strong>Smaller shadow maps</strong>. We were running 2048×2048 directional light shadows. Dropped to 1024×1024 — visible diff was minimal once we tuned bias, frame time dropped 3-4ms.</li>
+<li><strong><code>shadow.autoUpdate = false</code></strong> for the static parts of the scene. We render the shadow map once, freeze it, and only re-render when the lighting genuinely changes (which is rarely).</li>
+<li><strong>Cull aggressively.</strong> <code>directionalLight.shadow.camera</code> has a frustum. By default it's huge. Tighten it to just what your scene needs.</li>
+</ul>
+
+<p>Combined: about 5ms saved on the shadow pass.</p>
+
+<h2>3. Texture memory is a perf metric, not a quality metric</h2>
+
+<p>We had source textures at 4096×4096 because "the artists made them that big". On screen, they were rendered at sizes where the user could see maybe 512 pixels of them at once.</p>
+
+<p>Two things help here, both unsexy:</p>
+
+<ul>
+<li><strong>Generate mipmaps and let the GPU pick the right level.</strong> This is on by default in Three.js. The bug was we had <code>texture.minFilter = THREE.LinearFilter</code> set on a few textures, which disables mipmapping. Setting it back to <code>LinearMipmapLinearFilter</code> saved ~2ms by reducing memory bandwidth.</li>
+<li><strong>Compressed textures (BasisU / KTX2).</strong> Pipeline change, but worth it. We went from 380 MB texture memory to 92 MB. The GPU is happier, the CPU upload is faster, and the visual quality difference is invisible.</li>
+</ul>
+
+<h2>4. The post-processing pipeline lies about its cost</h2>
+
+<p>We had three passes: render scene → bloom → SMAA. Each pass renders to a full-screen quad at full resolution. Combined, this was ~4ms on M1. On lower-end hardware it was the entire frame budget.</p>
+
+<p>What helped:</p>
+
+<ul>
+<li><strong>Half-resolution bloom.</strong> Bloom is naturally blurry. Render it at half-resolution, upscale on composite. Zero visual difference, ~60% reduction in bloom cost.</li>
+<li><strong>Don't run post-processing in offscreen browser tabs.</strong> Detect with <code>document.visibilityState</code> and <code>requestAnimationFrame</code> throttling. Saves laptop fans during the 80% of the time the user has another tab open.</li>
+<li><strong>Skip SMAA on retina/high-DPI displays.</strong> The pixel density does the antialiasing for free. We disable SMAA when <code>devicePixelRatio >= 2</code>.</li>
+</ul>
+
+<h2>What didn't work</h2>
+
+<p>For completeness, things I tried that didn't move the needle:</p>
+
+<ul>
+<li><strong>Frustum culling tweaks.</strong> Three.js does this already and does it well. My attempts to "improve" it were either bug-introducing or net-zero.</li>
+<li><strong>Manual draw call merging.</strong> I rewrote a chunk of the geometry pipeline to merge static meshes. Got a 0.5ms win, but it made the code so ugly that one of the 3D artists couldn't iterate on placement. Reverted.</li>
+<li><strong><code>InstancedMesh</code> for the gallery items.</strong> This is the one every blog post recommends. It didn't help us because our items have different materials, and <code>InstancedMesh</code> requires a single material. We'd have had to bake material parameters into vertex attributes — complex, and the savings were marginal because we only had 80 instances, not 8000.</li>
+</ul>
+
+<h2>Tooling I keep open</h2>
+
+<ul>
+<li><strong>Chrome WebGL Profiler</strong> — built into DevTools. Use it.</li>
+<li><strong>Spector.js</strong> — for capturing single-frame analysis when the live profiler isn't enough.</li>
+<li><strong><code>renderer.info</code></strong> — log it once per second during development. Watch for unexpected <code>programs</code> or <code>geometries</code> counts.</li>
+<li><strong>A perf budget logger</strong> — I open-sourced a small one called <a href="https://github.com/remalw/webgl-perf-budget"><code>webgl-perf-budget</code></a>. Logs to console when you go over your budget. Stops surprises in production.</li>
+</ul>
+
+<h2>The big-picture lesson</h2>
+
+<p>Three.js performance work isn't about exotic techniques. It's about <em>measuring</em>, then <em>removing work</em>. Most of what I described above is deletion: don't compute matrices, don't render at full res, don't keep huge textures. The fastest code is the code you didn't run.</p>
+
+<p>Also: ship a budget. Not a target ("60 fps"), an active runtime check. Things regress. People add features. Without a budget, you'll be back at 24 fps in a year and you won't know which commit caused it.</p>
+
+<p>That's it. Email me if you want to compare notes — <code>remalw2019@gmail.com</code>. I'm always interested in real-world WebGL war stories.</p>
+
+    </div>
+
+    <hr style="margin: var(--space-7) 0;">
+
+    <div style="text-align: center;">
+      <p style="color: var(--fg-2); margin-bottom: var(--space-4);">If you found this useful, I post like this every few months.</p>
+      <a class="btn btn-ghost" href="/blog.html">More writing</a>
+    </div>
+  </div>
+</article>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="../about.html">About</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="../scripts/nav.js" defer></script>
+<script src="../scripts/reading-time.js" defer></script>
+</body>
+</html>

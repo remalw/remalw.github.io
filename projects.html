@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Daniel Tran</title>
+<meta name="description" content="Side projects, libraries, and experiments by Daniel Tran. Three.js, React, TypeScript.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="Projects — Daniel Tran">
+<meta property="og:description" content="Side projects, libraries, and experiments by Daniel Tran. Three.js, React, TypeScript.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="/" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/projects.html">Projects</a></li>
+      <li><a href="/blog.html">Writing</a></li>
+      <li><a href="/now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="section">
+  <div class="container">
+    <p class="section-label">Projects</p>
+    <h1 style="margin-bottom: var(--space-4);">Things I've built.</h1>
+    <p class="section-lead">A mix of side projects, small libraries, and experiments. Most are MIT-licensed and live on GitHub. Day-job code at Shopify is private — what's here is what I can show.</p>
+
+    <div class="grid-auto" style="margin-top: var(--space-6);">
+      <a href="/projects/shader-garden.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">shader-garden</h3>
+          <span class="project-card-meta">v0.1 · 2024–</span>
+        </div>
+        <p class="project-card-desc">A small collection of GLSL fragment shaders rendered with Three.js, with a Vite + React harness for live editing. Started as a notebook, became a thing.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">Three.js</span><span class="tag">GLSL</span><span class="tag">React</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Case study</span>
+          <span class="project-card-stats">8 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="/projects/next-typed-routes.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">next-typed-routes</h3>
+          <span class="project-card-meta">v0.5.0 · 2024–</span>
+        </div>
+        <p class="project-card-desc">Type-safe routing helpers for Next.js App Router. Compile-time-checked links and router calls. Because string-typed routes haunt my dreams.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">TypeScript</span><span class="tag">Next.js</span><span class="tag">Codegen</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Case study</span>
+          <span class="project-card-stats">8 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="/projects/react-overlay-stack.html" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">react-overlay-stack</h3>
+          <span class="project-card-meta">v1.2.0 · 2023–</span>
+        </div>
+        <p class="project-card-desc">Headless modal/drawer/popover stack manager for React. Focus traps, ESC-to-close stack semantics, scroll lock — done right.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Accessibility</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">Case study</span>
+          <span class="project-card-stats">9 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/remalw/webgl-perf-budget" target="_blank" rel="noopener" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">webgl-perf-budget</h3>
+          <span class="project-card-meta">v0.3.1 · 2025–</span>
+        </div>
+        <p class="project-card-desc">A lightweight runtime perf budget for WebGL scenes. Logs to console when you're past your budget. Production-friendly, low-overhead.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">WebGL</span><span class="tag">Three.js</span><span class="tag">Performance</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">View on GitHub</span>
+          <span class="project-card-stats">6 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/remalw/ts-strict-codemod" target="_blank" rel="noopener" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">ts-strict-codemod</h3>
+          <span class="project-card-meta">v0.5.0 · 2024–</span>
+        </div>
+        <p class="project-card-desc">Codemods to ease the migration to TypeScript <code>strict: true</code> without rewriting your whole app at once. Five focused codemods, each reviewable.</p>
+        <div class="tag-row" style="margin-bottom: var(--space-3);">
+          <span class="tag">TypeScript</span><span class="tag">ts-morph</span><span class="tag">Tooling</span>
+        </div>
+        <div class="project-card-footer">
+          <span class="btn-link">View on GitHub</span>
+          <span class="project-card-stats">8 commits · MIT</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/remalw" target="_blank" rel="noopener" class="card project-card card-link">
+        <div class="project-card-header">
+          <h3 class="project-card-title">More on GitHub →</h3>
+          <span class="project-card-meta">@remalw</span>
+        </div>
+        <p class="project-card-desc">Smaller experiments, forks I've contributed to, and one-off tools live on my GitHub profile.</p>
+        <div class="project-card-footer">
+          <span class="btn-link">Visit profile</span>
+          <span class="project-card-stats">@remalw</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/blog.html">Writing</a>
+      <a href="/now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="scripts/nav.js" defer></script>
+
+</body>
+</html>

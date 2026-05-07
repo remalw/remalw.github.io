@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Daniel Tran</title>
+<meta name="description" content="Senior Frontend Engineer at Shopify, based in Singapore. Career, philosophy, and what I care about.">
+<meta name="author" content="Daniel Tran">
+<meta name="theme-color" content="#0a0b0f">
+
+<meta property="og:title" content="About — Daniel Tran">
+<meta property="og:description" content="Senior Frontend Engineer at Shopify, based in Singapore. Career, philosophy, and what I care about.">
+<meta property="og:type" content="website">
+
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="/" class="nav-brand">
+      <span class="nav-brand-mark">DT</span>
+      <span>Daniel Tran</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/projects.html">Projects</a></li>
+      <li><a href="/blog.html">Writing</a></li>
+      <li><a href="/now.html">Now</a></li>
+    </ul>
+    <a href="mailto:remalw2019@gmail.com" class="nav-cta">Get in touch</a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+  </nav>
+</header>
+
+<main id="main">
+
+<section class="section">
+  <div class="container">
+    <p class="section-label">About</p>
+    <h1 style="margin-bottom: var(--space-5);">A frontend engineer who cares about the millisecond after page load.</h1>
+    <p class="section-lead">Some context on who I am and how I got here.</p>
+
+    <div class="about-grid">
+      <div class="about-prose">
+        <p>I'm <strong>Daniel Tran</strong>, 29, based in <strong>Singapore</strong>. I grew up between Saigon and Singapore, picked up coding in high school after spending too many hours bending Greasemonkey scripts to my will, and graduated from <strong>NUS</strong> with a B.Sc. (Hons) in Computer Science in 2019.</p>
+
+        <p>My career started as a full-stack engineer at a Series-B fintech, but I drifted toward the frontend after realizing I cared more about what users actually see and feel than about another microservice. Spent a few years leading frontend at a games platform — <em>that's where I fell down the Three.js rabbit hole</em> and learned the hard way that "WebGL is fast" is a half-truth without a perf budget.</p>
+
+        <p>These days I lean <strong>pragmatic over purist</strong>. I'd rather ship a 90% solution that real users love than perfect architecture nobody touches.</p>
+
+        <h2>What I care about</h2>
+        <ul>
+          <li><strong>Performance.</strong> Core Web Vitals matter. P75, not averages. The first 200ms is where users decide if they trust your app.</li>
+          <li><strong>Accessibility.</strong> It's not optional. Screen-reader testing belongs in CI, not in someone's "later" pile.</li>
+          <li><strong>Developer experience.</strong> Your tooling shapes your output. Slow <code>pnpm install</code> is slow team. Confusing error messages are tomorrow's bugs.</li>
+          <li><strong>Boring code.</strong> Clever code is a liability. The best PR I ever wrote deleted 200 lines and added zero.</li>
+        </ul>
+
+        <h2>Career so far</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <p class="timeline-meta">Aug 2024 — Present</p>
+            <p class="timeline-title">Senior Frontend Engineer</p>
+            <p class="timeline-company">Shopify · Remote</p>
+            <p class="timeline-desc">Merchant-facing platform team. Building dashboards and tooling used by millions of merchants daily.</p>
+            <ul class="timeline-bullets">
+              <li>Cut Time-to-Interactive on the slowest merchant settings route by 38% (P75)</li>
+              <li>Owned rollout of a new internal design system primitive across 12 product teams</li>
+              <li>Wrote internal tooling for type-safe feature flags, replacing a string-based system that had caused 3 production incidents in 2024</li>
+              <li>On-call rotation for frontend platform incidents — authored 4 post-mortems, contributed to 2 RFCs</li>
+            </ul>
+          </div>
+
+          <div class="timeline-item">
+            <p class="timeline-meta">Mar 2022 — Jul 2024 · 2y 5m</p>
+            <p class="timeline-title">Frontend Tech Lead</p>
+            <p class="timeline-company">Aurora Games · Singapore</p>
+            <p class="timeline-desc">Led the frontend for the player-facing web platform — leaderboards, profiles, interactive game previews.</p>
+            <ul class="timeline-bullets">
+              <li>Cut load times by 70% and improved Core Web Vitals scores by 45% through caching, code-splitting, and bundle optimization</li>
+              <li>Built immersive WebGL experiences with Three.js — launch trailer page hit a 35% increase in session length</li>
+              <li>Led migration to React 18 and Redux-Saga across the platform; zero downtime, 30% fewer re-renders</li>
+              <li>Mentored a team of six engineers to 100% on-time milestone delivery</li>
+              <li>Built CI-integrated visual regression testing using Playwright; caught ~12 visual bugs/quarter before merge</li>
+            </ul>
+          </div>
+
+          <div class="timeline-item">
+            <p class="timeline-meta">Sep 2020 — Feb 2022 · 1y 6m</p>
+            <p class="timeline-title">Senior Software Engineer</p>
+            <p class="timeline-company">Lumina Pay · Singapore</p>
+            <p class="timeline-desc">Cross-border payments product. Started as full-stack, transitioned to frontend specialist.</p>
+            <ul class="timeline-bullets">
+              <li>Led the rebuild of the payments dashboard from a legacy Backbone + jQuery stack to React + TypeScript</li>
+              <li>Designed and shipped the merchant onboarding flow — reduced drop-off by 22%</li>
+              <li>Built a real-time transaction feed using Server-Sent Events; reduced perceived latency for support agents from ~6s polling to sub-second</li>
+            </ul>
+          </div>
+
+          <div class="timeline-item">
+            <p class="timeline-meta">Jul 2019 — Aug 2020 · 1y 2m</p>
+            <p class="timeline-title">Software Engineer</p>
+            <p class="timeline-company">Tessellate Studio · Singapore</p>
+            <p class="timeline-desc">Small product agency. First job out of NUS. Worked across React, Vue, and Node.js.</p>
+            <ul class="timeline-bullets">
+              <li>Shipped 4 client projects from kickoff to launch</li>
+              <li>Standardized the studio's frontend project template; reduced new-project bootstrap time from ~3 days to under a day</li>
+              <li>Did a lot of CSS. Learned to like it.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Education</h2>
+        <p><strong>National University of Singapore (NUS)</strong> — B.Sc. (Hons) Computer Science, 2015 – 2019. Specialization: Software Systems. Graduated with First Class Honours.</p>
+        <p>Final-year project: a real-time collaborative whiteboard using CRDTs and WebRTC. Got a kick out of debugging clock skew.</p>
+
+        <h2>Outside work</h2>
+        <p>I write occasionally on this site, contribute to a few OSS libraries, hike when the weather plays nice, and run a hobby project rendering generative art with shaders. Currently learning Rust slowly. Trying to read more fiction.</p>
+      </div>
+
+      <aside class="about-aside">
+        <p class="about-aside-label">At a glance</p>
+        <div class="contact-block">
+          <div class="contact-block-row"><span class="contact-block-label">Based in</span><span class="contact-block-value">Singapore</span></div>
+          <div class="contact-block-row"><span class="contact-block-label">Timezone</span><span class="contact-block-value">UTC+8</span></div>
+          <div class="contact-block-row"><span class="contact-block-label">Experience</span><span class="contact-block-value">7 years</span></div>
+          <div class="contact-block-row"><span class="contact-block-label">Currently</span><span class="contact-block-value">Shopify</span></div>
+          <div class="contact-block-row"><span class="contact-block-label">Status</span><span class="contact-block-value" style="color: var(--green);">Open to work</span></div>
+        </div>
+
+        <hr style="border-color: var(--border); margin: var(--space-5) 0;">
+
+        <p class="about-aside-label">Get in touch</p>
+        <div class="contact-block">
+          <div class="contact-block-row"><span class="contact-block-label">Email</span><a href="mailto:remalw2019@gmail.com">remalw2019@gmail.com</a></div>
+          <div class="contact-block-row"><span class="contact-block-label">GitHub</span><a href="https://github.com/remalw" target="_blank" rel="noopener">@remalw</a></div>
+          <div class="contact-block-row"><span class="contact-block-label">LinkedIn</span><a href="https://www.linkedin.com/in/daniel-tran-sg" target="_blank" rel="noopener">daniel-tran-sg</a></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-meta">
+      <strong>Daniel Tran</strong> · Senior Frontend Engineer<br>
+      Singapore · UTC+8<br>
+      <span>Built with HTML, CSS, and patience.</span>
+    </div>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/projects.html">Projects</a>
+      <a href="/blog.html">Writing</a>
+      <a href="/now.html">Now</a>
+      <a href="https://github.com/remalw" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <p class="footer-quote">« Make it work, make it right, make it fast. » — usually in that order.</p>
+</footer>
+
+<script src="scripts/nav.js" defer></script>
+
+</body>
+</html>
